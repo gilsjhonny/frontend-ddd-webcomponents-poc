@@ -1,7 +1,7 @@
-import "./style.css";
+import './style.css';
 
-document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
-    Hello World
+    Hello World 
   </div>
 `;
