@@ -1,0 +1,23 @@
+:root {
+  --primary-font-family: 'Roboto', sans-serif;
+  --primary-font-size: 16px;
+  --primary-line-height: 1.5;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  font-family: var(--primary-font-family);
+  color: #333;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
