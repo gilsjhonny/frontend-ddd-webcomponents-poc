@@ -1,5 +1,6 @@
 import { DocumentListComponent } from '../../modules/document/presentation/components/DocumentList';
 import { DocumentListToggle } from '../../modules/document/presentation/components/DocumentListToggle';
+import { NotificationsComponent } from '../../modules/notification/presentation/components/NotificationsComponent';
 
 export class HomePageComponent extends HTMLElement {
   private listViewType: 'list' | 'grid';
@@ -15,7 +16,6 @@ export class HomePageComponent extends HTMLElement {
 
     this.handleToggleView = this.handleToggleView.bind(this);
 
-    // Listen to the toggle-view event
     this.shadowRoot!.addEventListener('toggle-view', this.handleToggleView);
   }
 
@@ -36,7 +36,6 @@ export class HomePageComponent extends HTMLElement {
     }
 
     if (documentToggle) {
-      console.log('documentToggle', documentToggle);
       documentToggle.setAttribute('data-view-type', this.listViewType);
     }
   }
@@ -56,14 +55,18 @@ export class HomePageComponent extends HTMLElement {
             margin: 0 auto;
           }
 
-          .header {
-            text-align: center;
-            margin-bottom: 24px;
+          .notifications {
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: center;
           }
         </style>
   
         <div class="home-page">
-            <h1 class="header">Document Management</h1>
+            <div class="notifications">
+                <${NotificationsComponent.componentName}></${NotificationsComponent.componentName}>
+            </div>
+            <h1 class="header">Documents</h1>
             <${DocumentListComponent.componentName} data-view-type="${this.listViewType}">
                 <div slot="top-left">Sort</div>
                 <${DocumentListToggle.componentName} slot="top-right" data-view-type="${this.listViewType}"></${DocumentListToggle.componentName}>

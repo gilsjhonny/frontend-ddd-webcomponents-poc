@@ -1,6 +1,7 @@
 import { registerDocumentCardComponent } from './modules/document/presentation/components/DocumentCard';
 import { registerDocumentListComponent } from './modules/document/presentation/components/DocumentList';
 import { registerDocumentListToggle } from './modules/document/presentation/components/DocumentListToggle';
+import { registerNotificationComponent } from './modules/notification/presentation/components/NotificationsComponent';
 import { HomePageComponent, registerHomePageComponent } from './presentation/pages/Home';
 import { registerGridIcon } from './shared/components/icons/GridIcon';
 import { registerListIcon } from './shared/components/icons/ListIcon';
@@ -13,6 +14,7 @@ registerGridIcon();
 registerListIcon();
 registerDocumentListToggle();
 registerHomePageComponent();
+registerNotificationComponent();
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = document.querySelector<HTMLDivElement>('#app')!;
