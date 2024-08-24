@@ -32,17 +32,27 @@ export class DocumentListComponent extends HTMLElement {
       return;
     }
 
+    // Main container
+    const container = document.createElement('div');
+
+    container.className = this.BASE_CLASS_NAME;
+    // List element with all the document cards
     const listElement = this.createListElement(documentViewsOrError);
 
-    this.applyStyles();
+    // Top bar with slots for additional content
+    const topBar = this.createTopBar();
 
-    this.shadowRoot!.appendChild(listElement);
+    // Append styles, slots, and the list
+    this.shadowRoot!.appendChild(this.getStyles());
+    this.shadowRoot!.appendChild(container);
+    container.appendChild(topBar);
+    container.appendChild(listElement);
   }
 
   private createListElement(documentViews: DocumentViewModel[]): HTMLElement {
     const isListView = this.viewType === 'list';
     const listElement = isListView ? document.createElement('ul') : document.createElement('div');
-    listElement.className = this.BASE_CLASS_NAME;
+    listElement.className = 'list-container';
 
     documentViews.forEach((documentView) => {
       const documentCard = document.createElement(DocumentCardComponent.componentName) as DocumentCardComponent;
@@ -65,12 +75,34 @@ export class DocumentListComponent extends HTMLElement {
     this.shadowRoot!.innerHTML = `<p>Error loading documents: ${message}</p>`;
   }
 
-  private applyStyles() {
+  private createTopBar(): HTMLElement {
+    const topBar = document.createElement('div');
+    topBar.className = 'top-bar';
+    topBar.innerHTML = `
+      <slot name="top-left"></slot>
+      <slot name="top-right"></slot>
+    `;
+
+    return topBar;
+  }
+
+  private getStyles(): HTMLStyleElement {
     const style = document.createElement('style');
     const isGrid = this.viewType === 'grid';
 
     style.textContent = `
-      .${this.BASE_CLASS_NAME} {
+      ${this.BASE_CLASS_NAME} {
+        display: flex;
+      }
+
+      .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+    
+      .list-container {
         display: ${isGrid ? 'grid' : 'flex'};
         margin: 0;
         margin-block-start: 0;
@@ -89,13 +121,11 @@ export class DocumentListComponent extends HTMLElement {
       }
 
       ${DocumentCardComponent.componentName} {
-        ${isGrid ? 'display: flex;' : ''}
-      }
-      ${DocumentCardComponent.componentName} > div {
-        ${isGrid ? 'flex: 1;' : ''}
+        display: flex;
       }
     `;
-    this.shadowRoot!.appendChild(style);
+
+    return style;
   }
 
   private clearShadowRoot() {
@@ -126,6 +156,12 @@ export class DocumentListComponent extends HTMLElement {
       this.render();
     }
   }
+
+  /**
+   * ============================================
+   * Setters, Getters and Statics
+   * ============================================
+   */
 
   static get componentName() {
     return 'document-list-component';

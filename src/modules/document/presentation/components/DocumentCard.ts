@@ -69,9 +69,7 @@ export class DocumentCardComponent extends HTMLElement {
     style.textContent = `
             .${this.BASE_CLASS_NAME} {
                 flex: 1;
-                background-color: #fff;
-                border: 1px solid #ccc;
-                border-radius: 14px;
+                background-color: var(--white);
                 padding: 16px;
                 display: flex;
                 gap: 16px;
@@ -145,7 +143,7 @@ export class DocumentCardComponent extends HTMLElement {
 
   /**
    * ============================================
-   * Properties
+   * Setters, Getters and Statics
    * ============================================
    */
 

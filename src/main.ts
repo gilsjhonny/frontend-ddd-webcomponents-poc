@@ -1,19 +1,22 @@
 import { registerDocumentCardComponent } from './modules/document/presentation/components/DocumentCard';
-import {
-  DocumentListComponent,
-  registerDocumentListComponent,
-} from './modules/document/presentation/components/DocumentList';
+import { registerDocumentListComponent } from './modules/document/presentation/components/DocumentList';
+import { registerDocumentListToggle } from './modules/document/presentation/components/DocumentListToggle';
+import { HomePageComponent, registerHomePageComponent } from './presentation/pages/Home';
+import { registerGridIcon } from './shared/components/icons/GridIcon';
+import { registerListIcon } from './shared/components/icons/ListIcon';
 import './style.css';
 
+// TODO: Move to a separate file
 registerDocumentCardComponent();
 registerDocumentListComponent();
+registerGridIcon();
+registerListIcon();
+registerDocumentListToggle();
+registerHomePageComponent();
 
-const app = document.querySelector<HTMLDivElement>('#app')!;
+document.addEventListener('DOMContentLoaded', () => {
+  const app = document.querySelector<HTMLDivElement>('#app')!;
+  const homePage = document.createElement(HomePageComponent.componentName);
 
-const documentListListView = document.createElement(DocumentListComponent.componentName) as HTMLElement;
-
-const documentListGridView = document.createElement(DocumentListComponent.componentName) as HTMLElement;
-documentListListView.setAttribute('data-view-type', 'grid');
-
-app.appendChild(documentListGridView);
-app.appendChild(documentListListView);
+  app.appendChild(homePage);
+});

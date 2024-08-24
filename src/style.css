@@ -1,7 +1,22 @@
 :root {
-  --primary-font-family: 'Roboto', sans-serif;
-  --primary-font-size: 16px;
-  --primary-line-height: 1.5;
+  /* Font related variables */
+  --font-family-base: 'Roboto', sans-serif;
+  --font-size-base: 16px;
+  --line-height-base: 1.5;
+
+  /* ------------------------ */
+  /* Color related variables */
+  /* ------------------------ */
+  /* Primary colors */
+  --black: #333;
+  --white: #fff;
+
+  /* Gray shades */
+  --gray-50: #f9fafb;
+  --gray-100: #f4f4f4;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #b8b8b8;
 }
 
 *,
@@ -15,8 +30,9 @@
 }
 
 body {
-  font-family: var(--primary-font-family);
-  color: #333;
+  background-color: var(--gray-100);
+  font-family: var(--font-family-base);
+  color: var(--black);
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
