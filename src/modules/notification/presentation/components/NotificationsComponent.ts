@@ -1,34 +1,102 @@
+import { BellIcon } from '../../../../shared/components/icons/BellIcon';
+import { DateUtils } from '../../../../shared/utils/DateUtils';
 import { NotificationWebSocket } from '../../infrastrcutrue/NotificationWebSocket';
 import { NotificationController } from '../NotificationController';
 
 export class NotificationsComponent extends HTMLElement {
   private notificationController: NotificationController;
-  private count: number = 0;
-  private countElement: HTMLElement | null = null;
-  private shadow: ShadowRoot;
+  private newNotifications: any[] = [];
+  private notificationBox: HTMLElement | null = null;
+  private updateInterval: number | null = null;
   private socketUrl: string = 'ws://localhost:9090/notifications';
 
   constructor() {
     super();
 
-    this.shadow = this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'open' });
     const notificationWebSocket = new NotificationWebSocket(this.socketUrl);
     this.notificationController = new NotificationController(notificationWebSocket);
   }
 
-  connectedCallback() {
-    this.render();
-    this.notificationController.startListening(this.updateCount.bind(this));
-  }
-
-  disconnectedCallback() {
-    this.notificationController.stopListening();
-  }
+  /**
+   * ============================================
+   * Private Methods
+   * ============================================
+   */
 
   private render() {
-    this.shadow.innerHTML = `
-      <style>
-        .button {
+    this.clearShadowRoot();
+
+    this.shadowRoot!.appendChild(this.createNotificationsElement());
+    this.shadowRoot!.appendChild(this.getStyles());
+  }
+
+  private createNotificationsElement(): HTMLElement {
+    const notificationsElement = document.createElement('div');
+    notificationsElement.className = 'notifications';
+
+    notificationsElement.appendChild(this.createNotificationButton());
+    notificationsElement.appendChild(this.createNotificationBox());
+
+    return notificationsElement;
+  }
+
+  private createNotificationButton(): HTMLButtonElement {
+    const buttonElement = document.createElement('button');
+    buttonElement.className = 'button';
+
+    const count = this.newNotifications.length;
+
+    buttonElement.innerHTML = `
+      <div class="button-icon-wrapper">
+        <${BellIcon.componentName} width="24px" height="24px"></${BellIcon.componentName}>
+        <div class="button-count">${count > 0 ? count : 0}</div>
+      </div>
+      <span>New documents added</span>
+    `;
+
+    return buttonElement;
+  }
+
+  private createNotificationBox(): HTMLElement {
+    const notificationBox = document.createElement('div');
+    notificationBox.className = 'notification-box';
+
+    this.notificationBox = notificationBox;
+
+    return notificationBox;
+  }
+
+  private createNewNotificationItem(notification: any): HTMLElement {
+    const notificationItem = document.createElement('div');
+
+    const userName = document.createElement('span');
+    userName.className = 'user-name';
+    userName.innerHTML = `<strong>${notification.userName}</strong> added `;
+
+    const documentTitle = document.createElement('span');
+    documentTitle.className = 'document-title';
+    documentTitle.textContent = notification.documentTitle;
+
+    const createdAt = document.createElement('span');
+    createdAt.className = 'created-at';
+    createdAt.textContent = ` ${DateUtils.humanizeDate(notification.timestamp)}`;
+
+    notificationItem.className = 'notification-item';
+    notificationItem.appendChild(userName);
+    notificationItem.appendChild(documentTitle);
+    notificationItem.appendChild(createdAt);
+
+    return notificationItem;
+  }
+
+  private getStyles(): HTMLStyleElement {
+    const style = document.createElement('style');
+    style.textContent = `
+       .notifications {
+          position: relative;
+        }
+       .button {
           border-radius: 30px;
           border: none;
           background-color: var(--gray-100);
@@ -38,6 +106,7 @@ export class NotificationsComponent extends HTMLElement {
           padding: 6px 24px 6px 18px;
           color: var(--text-color);
           position: relative;
+          cursor: pointer;
         }
         .button-icon-wrapper {
           position: relative;
@@ -61,63 +130,109 @@ export class NotificationsComponent extends HTMLElement {
           align-items: center;
           justify-content: center;
           min-width: 12px;
-
         }
-      </style>
-      <div class="notifications">
-        <div class="button-wrapper"></div>
-      </div>
+        .notification-box {
+          position: absolute;
+          top: 50px;
+          right: 50%;
+          transform: translateX(50%);
+          width: 450px;
+          height: 400px;
+          background-color: var(--white);
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          border-radius: 8px;
+          padding: 16px;
+          display: none;
+          flex-direction: column;
+          overflow-y: auto;
+        }
+        .notification-box.show {
+          display: flex;
+        }
+        .notification-item {
+          padding: 10px;
+          border-bottom: 1px solid var(--gray-200);
+          font-size: 0.9rem;
+        }
+        .notification-item:last-child {
+          border-bottom: none;
+        }
+        .document-title {
+          color: var(--black);
+          font-weight: bold;
+        }
+        .created-at {
+          color: var(--gray-400);
+          font-style: italic;
+        }
     `;
 
-    this.updateButton();
+    return style;
   }
 
-  private updateButton() {
-    const buttonWrapper = this.shadow.querySelector('.button-wrapper');
-
-    if (buttonWrapper) {
-      buttonWrapper.innerHTML = '';
-      const buttonElement = this.renderNotificationButton();
-      buttonWrapper.appendChild(buttonElement);
+  private toggleNotificationBox() {
+    if (this.notificationBox) {
+      this.notificationBox.classList.toggle('show');
     }
   }
 
-  private renderNotificationButton(): HTMLButtonElement {
-    const buttonElement = document.createElement('button');
-    buttonElement.className = 'button';
-
-    buttonElement.innerHTML = `
-      <div class="button-icon-wrapper">
-        ${this.renderIcon()}
-        <div class="button-count">${this.count > 0 ? this.count : ''}</div>
-      </div>
-      <span>New documents added</span>
-    `;
-
-    this.countElement = buttonElement.querySelector('.button-count');
-
-    return buttonElement;
-  }
-
-  private renderIcon(): string {
-    return `
-      <svg viewBox="-5 -10 110 135" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M91.172 73.656c-.457-.91-1.254-1.707-2.39-2.39-3.985-2.278-5.919-12.067-5.919-12.067s-2.617-5.82-5.804-27.332c-2.39-15.82-14.23-21.172-20.262-22.766-.114-3.64-3.075-6.601-6.72-6.601-3.64 0-6.714 2.96-6.714 6.601-6.031 1.707-17.87 6.942-20.262 22.766C19.914 53.265 17.296 59.2 17.296 59.2s-1.933 9.79-5.918 12.066c-2.05 1.254-2.843 2.961-3.074 4.325-.226 1.48.113 2.843 1.024 3.984.34.34.683.684 1.136 1.023.797.57 1.934.91 3.188.91H86.5c.91 0 1.933-.226 2.73-.683 0 0 .114 0 .114-.113 2.28-1.477 3.078-4.664 1.828-7.055zM62.258 85.207c0 6.715-5.465 12.293-12.293 12.293s-12.293-5.465-12.293-12.293z"
-        />
-      </svg>
-    `;
-  }
-
-  private updateCount = () => {
-    this.count++;
-
-    if (this.countElement) {
-      this.countElement.textContent = this.count.toString();
-    } else {
-      this.updateButton();
+  private addNotificationToBox(notification: any) {
+    if (this.notificationBox) {
+      const notificationItem = this.createNewNotificationItem(notification);
+      this.notificationBox.prepend(notificationItem);
     }
-  };
+  }
+
+  private updateNotificationCount() {
+    const buttonCount = this.shadowRoot!.querySelector('.button-count') as HTMLElement;
+    buttonCount.textContent = this.newNotifications.length.toString();
+  }
+
+  private handleNewNotifications(notification: any) {
+    this.newNotifications.push(notification);
+    this.addNotificationToBox(notification);
+    this.updateNotificationCount();
+  }
+
+  private updateNotificationTimestamps() {
+    const notificationItems = this.shadowRoot!.querySelectorAll('.notification-item .created-at');
+    notificationItems.forEach((item, index) => {
+      item.textContent = ` ${DateUtils.humanizeDate(this.newNotifications[index].timestamp)}`;
+    });
+  }
+
+  /**
+   * ============================================
+   * Web Component Lifecycle
+   * ============================================
+   */
+
+  connectedCallback() {
+    this.render();
+    this.notificationController.startListening((notification) => this.handleNewNotifications(notification));
+    this.shadowRoot!.querySelector('.button')!.addEventListener('click', () => this.toggleNotificationBox());
+
+    this.updateInterval = window.setInterval(() => this.updateNotificationTimestamps(), 5000);
+  }
+
+  disconnectedCallback() {
+    this.notificationController.stopListening();
+    this.shadowRoot!.querySelector('.button')!.removeEventListener('click', () => this.toggleNotificationBox());
+
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+    }
+  }
+
+  private clearShadowRoot() {
+    this.shadowRoot!.innerHTML = '';
+  }
+
+  /**
+   * ============================================
+   * Setters, Getters and Statics
+   * ============================================
+   */
 
   static get componentName(): string {
     return 'notifications-component';
