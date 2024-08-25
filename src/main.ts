@@ -4,6 +4,7 @@ import { registerDocumentListComponent } from './modules/document/presentation/c
 import { registerDocumentListToggle } from './modules/document/presentation/components/DocumentListToggle';
 import { registerNotificationComponent } from './modules/notification/presentation/components/NotificationsComponent';
 import { HomePageComponent, registerHomePageComponent } from './presentation/pages/Home';
+import { registerCaretDownIcon } from './shared/components/icons/CaretDown';
 import { registerGridIcon } from './shared/components/icons/GridIcon';
 import { registerListIcon } from './shared/components/icons/ListIcon';
 import { registerModal } from './shared/components/Modal';
@@ -21,6 +22,7 @@ registerNotificationComponent();
 registerModal();
 registerAddDocumentFormComponent();
 registerSelectComponent();
+registerCaretDownIcon();
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = document.querySelector<HTMLDivElement>('#app')!;

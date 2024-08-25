@@ -99,8 +99,9 @@ export class AddDocumentFormComponent extends HTMLElement {
         color: white;
         border: none;
         cursor: pointer;
-        font-size: 16px;
-        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: bold;
+        border-radius: 6px;
       }
       .submit-button:disabled {
         background-color: var(--gray-300);
