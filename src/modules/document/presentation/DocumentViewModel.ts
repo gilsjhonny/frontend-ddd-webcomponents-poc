@@ -7,6 +7,10 @@ export class DocumentViewModel {
     return new DocumentViewModel(document);
   }
 
+  get creationDate(): Date {
+    return this.document.getCreationDate();
+  }
+
   get formattedCreationDate(): string {
     return this.formatDate(this.document.getCreationDate());
   }
