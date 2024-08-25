@@ -1,11 +1,12 @@
 import { BellIcon } from '../../../../shared/components/icons/BellIcon';
 import { DateUtils } from '../../../../shared/utils/DateUtils';
+import { Notification } from '../../domain/Notification';
 import { NotificationWebSocket } from '../../infrastrcutrue/NotificationWebSocket';
 import { NotificationController } from '../NotificationController';
 
 export class NotificationsComponent extends HTMLElement {
   private notificationController: NotificationController;
-  private newNotifications: any[] = [];
+  private newNotifications: Notification[] = [];
   private notificationBox: HTMLElement | null = null;
   private updateInterval: number | null = null;
   private socketUrl: string = 'ws://localhost:9090/notifications';
@@ -67,20 +68,20 @@ export class NotificationsComponent extends HTMLElement {
     return notificationBox;
   }
 
-  private createNewNotificationItem(notification: any): HTMLElement {
+  private createNewNotificationItem(notification: Notification): HTMLElement {
     const notificationItem = document.createElement('div');
 
     const userName = document.createElement('span');
     userName.className = 'user-name';
-    userName.innerHTML = `<strong>${notification.userName}</strong> added `;
+    userName.innerHTML = `<strong>${notification.getUserName()}</strong> added `;
 
     const documentTitle = document.createElement('span');
     documentTitle.className = 'document-title';
-    documentTitle.textContent = notification.documentTitle;
+    documentTitle.textContent = notification.getDocumentTitle();
 
     const createdAt = document.createElement('span');
     createdAt.className = 'created-at';
-    createdAt.textContent = ` ${DateUtils.humanizeDate(notification.timestamp)}`;
+    createdAt.textContent = ` ${DateUtils.humanizeDate(notification.getTimestamp())}`;
 
     notificationItem.className = 'notification-item';
     notificationItem.appendChild(userName);
@@ -176,7 +177,7 @@ export class NotificationsComponent extends HTMLElement {
     }
   }
 
-  private addNotificationToBox(notification: any) {
+  private addNotificationToBox(notification: Notification) {
     if (this.notificationBox) {
       const notificationItem = this.createNewNotificationItem(notification);
       this.notificationBox.prepend(notificationItem);
@@ -188,7 +189,7 @@ export class NotificationsComponent extends HTMLElement {
     buttonCount.textContent = this.newNotifications.length.toString();
   }
 
-  private handleNewNotifications(notification: any) {
+  private handleNewNotifications(notification: Notification) {
     this.newNotifications.push(notification);
     this.addNotificationToBox(notification);
     this.updateNotificationCount();
@@ -197,7 +198,7 @@ export class NotificationsComponent extends HTMLElement {
   private updateNotificationTimestamps() {
     const notificationItems = this.shadowRoot!.querySelectorAll('.notification-item .created-at');
     notificationItems.forEach((item, index) => {
-      item.textContent = ` ${DateUtils.humanizeDate(this.newNotifications[index].timestamp)}`;
+      item.textContent = ` ${DateUtils.humanizeDate(this.newNotifications[index].getTimestamp())}`;
     });
   }
 

@@ -7,7 +7,7 @@ export class Notification {
   private documentId: string;
   private documentTitle: string;
 
-  constructor({ timestamp, userId, userName, documentId, documentTitle }: NotificationProperties) {
+  private constructor({ timestamp, userId, userName, documentId, documentTitle }: NotificationProperties) {
     this.timestamp = timestamp;
     this.userId = userId;
     this.userName = userName;
@@ -15,7 +15,21 @@ export class Notification {
     this.documentTitle = documentTitle;
   }
 
-  // Getters
+  /**
+   * ============================================
+   * Static Factory Methods
+   * ============================================
+   */
+
+  static createFromProperties(properties: NotificationProperties): Notification {
+    return new Notification(properties);
+  }
+
+  /**
+   * ============================================
+   * Public Getters for Document Properties
+   * ============================================
+   */
   public getTimestamp(): Date {
     return this.timestamp;
   }
@@ -34,15 +48,5 @@ export class Notification {
 
   public getDocumentTitle(): string {
     return this.documentTitle;
-  }
-
-  public static createFromResponse(response: any): Notification {
-    return new Notification({
-      timestamp: new Date(response.Timestamp),
-      userId: response.UserID,
-      userName: response.UserName,
-      documentId: response.DocumentID,
-      documentTitle: response.DocumentTitle,
-    });
   }
 }

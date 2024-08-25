@@ -1,5 +1,6 @@
 import { Notification } from '../domain/Notification';
 import { NotificationWebSocket } from '../infrastrcutrue/NotificationWebSocket';
+import { WebSocketNotification } from '../types';
 
 export class NotificationController {
   private notificationWebSocket: NotificationWebSocket;
@@ -11,8 +12,8 @@ export class NotificationController {
   // Retrieve notifications using the WebSocket
   public startListening(listener: (notification: Notification) => void): void {
     this.notificationWebSocket.addListener({
-      onMessage: (data: any) => {
-        const notification = Notification.createFromResponse(data);
+      onMessage: (data: WebSocketNotification) => {
+        const notification = this.notificationWebSocket.mapToDomain(data);
         listener(notification);
       },
       onError: (error: Event) => {

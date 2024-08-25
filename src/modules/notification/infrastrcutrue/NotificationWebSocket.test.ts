@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { NotificationWebSocket } from './NotificationWebSocket';
 import { WebSocketListener } from '../../../lib/WebSocketFacade';
+import { WebSocketNotification } from '../types';
+import { Notification } from '../domain/Notification';
 
 describe('NotificationWebSocket', () => {
   let mockSocket: Partial<WebSocket>;
@@ -86,6 +88,27 @@ describe('NotificationWebSocket', () => {
       notificationWebSocket.subscribeToNotifications(listener);
       notificationWebSocket.unsubscribeFromNotifications(listener);
       expect(notificationWebSocket['listeners']).not.toContain(listener);
+    });
+  });
+
+  describe('mapToDomain', () => {
+    it('should map WebSocket data to a domain Notification object', () => {
+      const webSocketData: WebSocketNotification = {
+        Timestamp: new Date(),
+        UserID: '123',
+        UserName: 'John Doe',
+        DocumentID: '456',
+        DocumentTitle: 'Test Document',
+      };
+
+      const notification = notificationWebSocket.mapToDomain(webSocketData);
+
+      expect(notification).toBeInstanceOf(Notification);
+      expect(notification.getTimestamp()).toBe(webSocketData.Timestamp);
+      expect(notification.getUserId()).toBe(webSocketData.UserID);
+      expect(notification.getUserName()).toBe(webSocketData.UserName);
+      expect(notification.getDocumentId()).toBe(webSocketData.DocumentID);
+      expect(notification.getDocumentTitle()).toBe(webSocketData.DocumentTitle);
     });
   });
 });

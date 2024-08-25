@@ -38,7 +38,19 @@ describe('DateUtils.humanizeDate', () => {
   });
 
   it('should return an empty string when the date is invalid', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(DateUtils.humanizeDate(null as any)).toBe('');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(DateUtils.humanizeDate(undefined as any)).toBe('');
+  });
+
+  it('should handle valid date strings correctly', () => {
+    const date = new Date(Date.now() - 5 * 60 * 1000).toISOString(); // 5 minutes ago as string
+    expect(DateUtils.humanizeDate(date)).toBe('5 minutes ago');
+  });
+
+  it('should return "Invalid date" for an unparseable date string', () => {
+    const invalidDateString = 'not-a-real-date';
+    expect(DateUtils.humanizeDate(invalidDateString)).toBe('Invalid date');
   });
 });

@@ -1,4 +1,4 @@
-class SelectComponent extends HTMLElement {
+export class SelectComponent extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -69,7 +69,7 @@ class SelectComponent extends HTMLElement {
         display: none;
         position: absolute;
         background-color: var(--white);
-        border: 1px solid #ccc;
+        border: 1px solid var(--gray-200);
         border-radius: 4px;
         width: 100%;
         z-index: 3;
@@ -130,7 +130,7 @@ class SelectComponent extends HTMLElement {
   }
 
   private toggleOpen = () => {
-    const optionsWrapper = this.shadowRoot!.querySelector('.options-wrapper');
+    const optionsWrapper = this.shadowRoot!.querySelector('.options-wrapper') as HTMLElement;
     if (optionsWrapper) {
       optionsWrapper.style.display = optionsWrapper.style.display === 'flex' ? 'none' : 'flex';
     }

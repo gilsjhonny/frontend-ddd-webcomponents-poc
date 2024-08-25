@@ -1,4 +1,6 @@
 import { WebSocketFacade, WebSocketListener } from '../../../lib/WebSocketFacade';
+import { Notification } from '../domain/Notification';
+import { WebSocketNotification } from '../types';
 
 export class NotificationWebSocket extends WebSocketFacade {
   constructor(url: string) {
@@ -19,5 +21,15 @@ export class NotificationWebSocket extends WebSocketFacade {
 
   unsubscribeFromNotifications(listener: WebSocketListener): void {
     this.removeListener(listener);
+  }
+
+  mapToDomain(data: WebSocketNotification): Notification {
+    return Notification.createFromProperties({
+      timestamp: data.Timestamp,
+      userId: data.UserID,
+      userName: data.UserName,
+      documentId: data.DocumentID,
+      documentTitle: data.DocumentTitle,
+    });
   }
 }

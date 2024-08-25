@@ -1,6 +1,17 @@
 export class DateUtils {
-  static humanizeDate(date: Date): string {
-    if (!date) return '';
+  static humanizeDate(dateInput: Date | string): string {
+    if (!dateInput) return '';
+
+    let date: Date;
+
+    if (typeof dateInput === 'string') {
+      date = new Date(dateInput);
+      if (isNaN(date.getTime())) {
+        return 'Invalid date';
+      }
+    } else {
+      date = dateInput;
+    }
 
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);

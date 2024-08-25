@@ -2,12 +2,13 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NotificationWebSocket } from '../infrastrcutrue/NotificationWebSocket';
 import { Notification } from '../domain/Notification';
 import { NotificationController } from './NotificationController';
+import { WebSocketNotification } from '../types';
 
 describe('NotificationController', () => {
   let mockWebSocket: Partial<NotificationWebSocket>;
   let notificationController: NotificationController;
-  const mockNotificationData = {
-    Timestamp: '2023-08-24T10:00:00Z',
+  const mockNotificationData: WebSocketNotification = {
+    Timestamp: new Date(),
     UserID: 'user123',
     UserName: 'John Doe',
     DocumentID: 'doc456',
@@ -19,6 +20,15 @@ describe('NotificationController', () => {
       addListener: vi.fn(),
       connect: vi.fn(),
       disconnect: vi.fn(),
+      mapToDomain: vi.fn().mockReturnValue(
+        Notification.createFromProperties({
+          timestamp: mockNotificationData.Timestamp,
+          userId: mockNotificationData.UserID,
+          userName: mockNotificationData.UserName,
+          documentId: mockNotificationData.DocumentID,
+          documentTitle: mockNotificationData.DocumentTitle,
+        })
+      ),
     } as Partial<NotificationWebSocket>;
 
     notificationController = new NotificationController(mockWebSocket as NotificationWebSocket);
@@ -40,7 +50,7 @@ describe('NotificationController', () => {
       notificationController.startListening(listener);
 
       const mockOnMessage = (mockWebSocket.addListener as vi.Mock).mock.calls[0][0].onMessage;
-      const notification = Notification.createFromResponse(mockNotificationData);
+      const notification = new NotificationWebSocket('').mapToDomain(mockNotificationData);
 
       mockOnMessage(mockNotificationData);
 
