@@ -85,6 +85,99 @@ The project is organized by feature or module (e.g., document), and within each 
 - `shared/components/`: Contains generic UI components that can be reused across different modules.
 - `shared/utils/`: Utility functions and helpers that are used throughout the application.
 
+
+## Web Components
+Even though there's no one "right" way to structure and organize WebComponents, after reading many articles and experimenting, I developed my own approach.
+
+Example Web Component: `MyButton`
+Below is a simple example of a button component that can be enabled or disabled based on an attribute:
+
+```javascript
+export class MyButton extends HTMLElement {
+  private readonly BASE_CLASS_NAME = 'my-button';
+  private static readonly DISABLED_ATTRIBUTE = 'disabled';
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    this.render();
+  }
+
+  /**
+   * ============================================
+   * Private Methods
+   * ============================================
+   */
+
+  private render() {
+    this.clearShadowRoot();
+
+    const button = document.createElement('button');
+    button.className = this.BASE_CLASS_NAME;
+    button.textContent = this.getAttribute('label') || 'Click Me';
+    button.disabled = this.hasAttribute(MyButton.DISABLED_ATTRIBUTE);
+
+    this.applyStyles(button);
+    this.shadowRoot!.appendChild(button);
+  }
+
+  private applyStyles(button: HTMLButtonElement) {
+    const style = document.createElement('style');
+
+    style.textContent = `
+      .${this.BASE_CLASS_NAME} {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: var(--button-bg-color, #007bff);
+        color: var(--button-text-color, #fff);
+        border: none;
+        border-radius: 4px;
+      }
+
+      .${this.BASE_CLASS_NAME}[disabled] {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+    `;
+
+    this.shadowRoot!.appendChild(style);
+  }
+
+  private clearShadowRoot() {
+    this.shadowRoot!.innerHTML = '';
+  }
+
+  /**
+   * ============================================
+   * Web Component Lifecycle
+   * ============================================
+   */
+
+  static get observedAttributes() {
+    return [MyButton.DISABLED_ATTRIBUTE, 'label'];
+  }
+
+  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+    if (oldValue !== newValue) {
+      this.render();
+    }
+  }
+}
+
+export function registerMyButton() {
+  customElements.define('my-button', MyButton);
+}
+```
+
+- **Class Name**: `MyButton` is the class name of the component. It extends `HTMLElement`, allowing it to be used as a custom `HTML` element.
+- **Base Class Name**: `BASE_CLASS_NAME` is used to define a consistent `CSS` class name for the component’s elements.
+- **Attributes**: The component listens for a disabled attribute and a label attribute to control whether the button is clickable and what text it displays.
+- **Rendering**: The render method constructs the button element, sets its properties (like text and disabled state), and adds it to the shadow DOM.
+- **Styling**: The `applyStyles` method injects CSS into the shadow DOM to style the button. It includes styles for both the normal and disabled states.
+- **Lifecycle Methods** (Web Components API): The component uses attributeChangedCallback and observedAttributes to react when the disabled or label attributes change, re-rendering the button if necessary.
+
+
 ## The Project
 In this project, I built a web app that displays a list of documents a customer has on their account. Each document includes a name, a list of contributors, a version number, and some attachments.
 
