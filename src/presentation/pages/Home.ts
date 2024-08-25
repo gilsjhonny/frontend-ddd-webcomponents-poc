@@ -162,7 +162,8 @@ export class HomePageComponent extends HTMLElement {
         </div>
         
         <${ModalComponent.componentName}>
-            <${AddDocumentFormComponent.componentName}></${AddDocumentFormComponent.componentName}>
+            <h3 slot="title">Add a new document</h3>
+            <${AddDocumentFormComponent.componentName} slot="content"></${AddDocumentFormComponent.componentName}>
         </${ModalComponent.componentName}>
       `;
 

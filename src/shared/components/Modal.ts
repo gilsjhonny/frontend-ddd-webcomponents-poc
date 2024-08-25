@@ -41,12 +41,18 @@ export class ModalComponent extends HTMLElement {
     modalContent.className = `${this.BASE_CLASS_NAME}__content`;
     modalContent.setAttribute('data-testid', ModalComponent.TEST_IDS.CONTENT);
 
+    // Slot for the title
+    const titleSlot = document.createElement('slot');
+    titleSlot.name = 'title';
+
     // Slot for the content
     const slot = document.createElement('slot');
+    slot.name = 'content';
 
-    mainWrapper.appendChild(closeButton);
     mainWrapper.appendChild(modalContent);
+    modalContent.appendChild(titleSlot);
     modalContent.appendChild(slot);
+    modalContent.appendChild(closeButton);
 
     return mainWrapper;
   }
@@ -69,12 +75,18 @@ export class ModalComponent extends HTMLElement {
 
     .${this.BASE_CLASS_NAME}__content {
         background: var(--white);
-        padding: 20px;
+        padding: 40px 20px 20px 30px;
         border-radius: 8px;
-        max-width: 500px;
+        max-width: 600px;
         width: 100%;
         box-shadow: 0 4px 8px var(--gray-400);
         width: 500px;
+        position: relative;
+    }
+
+    ::slotted([slot='title']) {
+        font-size: 1.5rem;
+        margin: 0 0 20px 0;
     }
 
     .${this.BASE_CLASS_NAME}__close-button {
