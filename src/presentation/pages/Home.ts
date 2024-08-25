@@ -30,7 +30,7 @@ export class HomePageComponent extends HTMLElement {
     this.shadowRoot!.addEventListener('toggle-view', this.handleToggleView);
     this.shadowRoot!.addEventListener('document-submitted', this.handleDocumentSubmission);
     this.shadowRoot!.querySelector('.add-document-button')?.addEventListener('click', this.handleAddDocumentClick);
-    this.shadowRoot!.querySelector('select')?.addEventListener('change', this.handleSortCriteriaChange);
+    this.shadowRoot!.querySelector('custom-select')?.addEventListener('onchange', this.handleSortCriteriaChange);
 
     this.updateSelectValue();
   }
@@ -57,11 +57,9 @@ export class HomePageComponent extends HTMLElement {
     }
   }
 
-  private handleSortCriteriaChange(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    this.sortCriteria = select.value as 'name' | 'version' | 'creation-date';
+  private handleSortCriteriaChange(event: CustomEvent) {
+    this.sortCriteria = event.detail.value as 'name' | 'version' | 'creation-date';
 
-    console.log('Sort criteria:', this.sortCriteria);
     const documentList = this.shadowRoot!.querySelector<DocumentListComponent>(DocumentListComponent.componentName);
     documentList?.setAttribute('data-sort-criteria', this.sortCriteria);
   }
@@ -133,6 +131,13 @@ export class HomePageComponent extends HTMLElement {
             cursor: pointer;
             margin-top: 26px;
           }
+
+          .sort-by {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+          }
         </style>
   
         <div class="home-page">
@@ -142,13 +147,13 @@ export class HomePageComponent extends HTMLElement {
             <h1 class="header">Documents</h1>
             <${DocumentListComponent.componentName} data-view-type="${this.listViewType}">
                 <div slot="top-left">
-                  <div>
+                  <div class="sort-by">
                     <div>Sort by:</div>
-                    <select name="sort-criteria" value="${this.sortCriteria}">
-                      <option value="name">Name</option>
-                      <option value="version">Version</option>
-                      <option value="creation-date">Creation Date</option>
-                    </select>
+                  <custom-select>
+                    <option value="name">Name</option>
+                    <option value="creation-date">Creation date</option>
+                    <option value="version">Version</option>
+                  </custom-select>
                   </div>
                 </div>
                 <${DocumentListToggle.componentName} slot="top-right" data-view-type="${this.listViewType}"></${DocumentListToggle.componentName}>

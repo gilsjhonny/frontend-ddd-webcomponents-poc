@@ -7,6 +7,7 @@ import { HomePageComponent, registerHomePageComponent } from './presentation/pag
 import { registerGridIcon } from './shared/components/icons/GridIcon';
 import { registerListIcon } from './shared/components/icons/ListIcon';
 import { registerModal } from './shared/components/Modal';
+import { registerSelectComponent } from './shared/components/Select';
 import './style.css';
 
 // TODO: Move to a separate file
@@ -19,6 +20,7 @@ registerHomePageComponent();
 registerNotificationComponent();
 registerModal();
 registerAddDocumentFormComponent();
+registerSelectComponent();
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = document.querySelector<HTMLDivElement>('#app')!;
