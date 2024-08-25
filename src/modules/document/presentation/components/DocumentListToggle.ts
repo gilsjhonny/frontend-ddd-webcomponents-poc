@@ -6,33 +6,26 @@ export class DocumentListToggle extends HTMLElement {
     this.attachShadow({ mode: 'open' });
   }
 
-  connectedCallback() {
-    this.render();
-
-    this.shadowRoot!.querySelector('.list-button')?.addEventListener('click', () => this.toggleView('list'));
-    this.shadowRoot!.querySelector('.grid-button')?.addEventListener('click', () => this.toggleView('grid'));
-  }
-
-  disconnectedCallback() {
-    this.shadowRoot!.querySelector('.list-button')?.removeEventListener('click', () => this.toggleView('list'));
-    this.shadowRoot!.querySelector('.grid-button')?.removeEventListener('click', () => this.toggleView('grid'));
-  }
-
+  /**
+   * ============================================
+   * Private Methods
+   * ============================================
+   */
   private render() {
     if (!this.shadowRoot!.innerHTML) {
       this.shadowRoot!.innerHTML = `
-        <style>
-          button {
-            background: none;
-            border: none;
-            cursor: pointer;
-          }
-        </style>
-        <div>
-            <button class="list-button"><list-icon></list-icon></button>
-            <button class="grid-button"><grid-icon></grid-icon></button>
-        </div>
-      `;
+          <style>
+            button {
+              background: none;
+              border: none;
+              cursor: pointer;
+            }
+          </style>
+          <div>
+              <button class="list-button"><list-icon></list-icon></button>
+              <button class="grid-button"><grid-icon></grid-icon></button>
+          </div>
+        `;
     }
     this.updateButtonStyles();
   }
@@ -40,8 +33,8 @@ export class DocumentListToggle extends HTMLElement {
   private updateButtonStyles() {
     const isListView = this.selectedView === 'list';
 
-    const listButton = this.shadowRoot!.querySelector('.list-button');
-    const gridButton = this.shadowRoot!.querySelector('.grid-button');
+    const listButton = this.shadowRoot!.querySelector('.list-button') as HTMLElement;
+    const gridButton = this.shadowRoot!.querySelector('.grid-button') as HTMLElement;
 
     if (listButton) {
       listButton.style.color = isListView ? 'var(--black)' : 'var(--gray-400)';
@@ -65,8 +58,22 @@ export class DocumentListToggle extends HTMLElement {
     this.dispatchEvent(newEvent);
   }
 
-  static get observedAttributes() {
-    return ['data-view-type'];
+  /**
+   * ============================================
+   * Web Component Lifecycle
+   * ============================================
+   */
+
+  connectedCallback() {
+    this.render();
+
+    this.shadowRoot!.querySelector('.list-button')?.addEventListener('click', () => this.toggleView('list'));
+    this.shadowRoot!.querySelector('.grid-button')?.addEventListener('click', () => this.toggleView('grid'));
+  }
+
+  disconnectedCallback() {
+    this.shadowRoot!.querySelector('.list-button')?.removeEventListener('click', () => this.toggleView('list'));
+    this.shadowRoot!.querySelector('.grid-button')?.removeEventListener('click', () => this.toggleView('grid'));
   }
 
   attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
@@ -74,6 +81,16 @@ export class DocumentListToggle extends HTMLElement {
       this.selectedView = newValue === 'grid' ? 'grid' : 'list';
       this.updateButtonStyles();
     }
+  }
+
+  /**
+   * ============================================
+   * Setters, Getters and Statics
+   * ============================================
+   */
+
+  static get observedAttributes() {
+    return ['data-view-type'];
   }
 
   static get componentName() {
