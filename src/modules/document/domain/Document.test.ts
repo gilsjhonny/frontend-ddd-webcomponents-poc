@@ -27,33 +27,17 @@ describe('Document', () => {
     expect(document.getContributors()).toEqual([]);
   });
 
-  describe('when creating with an invalid id', () => {
-    it('should throw a DocumentException if name is missing or empty', () => {
-      const invalidProperties = { ...mockProperties, id: '' };
+  describe('when creating with no id', () => {
+    it('should create a Document instance with valid properties and generate a unique ID', () => {
+      const document = Document.createFromProperties({ ...mockProperties, id: undefined });
 
-      expect(() => Document.createFromProperties(invalidProperties)).toThrow(DocumentException);
-      expect(() => Document.createFromProperties(invalidProperties)).toThrow(DocumentErrors.INVALID_ID);
-    });
-
-    it('should throw a DocumentException if id is only whitespace', () => {
-      const invalidProperties = { ...mockProperties, id: '   ' };
-
-      expect(() => Document.createFromProperties(invalidProperties)).toThrow(DocumentException);
-      expect(() => Document.createFromProperties(invalidProperties)).toThrow(DocumentErrors.INVALID_ID);
-    });
-
-    it('should throw a DocumentException if id is null or undefined', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let invalidProperties = { ...mockProperties, id: undefined as any };
-
-      expect(() => Document.createFromProperties(invalidProperties)).toThrow(DocumentException);
-      expect(() => Document.createFromProperties(invalidProperties)).toThrow(DocumentErrors.INVALID_ID);
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      invalidProperties = { ...mockProperties, id: null as any };
-
-      expect(() => Document.createFromProperties(invalidProperties)).toThrow(DocumentException);
-      expect(() => Document.createFromProperties(invalidProperties)).toThrow(DocumentErrors.INVALID_ID);
+      expect(document).toBeInstanceOf(Document);
+      expect(document.getId()).toMatch(/^[a-z0-9]+-[a-z0-9]+$/);
+      expect(document.getName()).toBe('Test Document');
+      expect(document.getVersion()).toBe('1.0');
+      expect(document.getAttachments()).toEqual([]);
+      expect(document.getCreationDate()).toEqual(mockProperties.creationDate);
+      expect(document.getContributors()).toEqual([]);
     });
   });
 
@@ -87,13 +71,17 @@ describe('Document', () => {
     });
   });
 
-  describe('when creating with an invalid creation date', () => {
-    it('should throw a DocumentException if creation date is missing', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const invalidProperties = { ...mockProperties, creationDate: undefined as any };
+  describe('when creating with no creation date', () => {
+    it('should create a Document instance with valid properties and generate a creation date', () => {
+      const document = Document.createFromProperties({ ...mockProperties, creationDate: undefined });
 
-      expect(() => Document.createFromProperties(invalidProperties)).toThrow(DocumentException);
-      expect(() => Document.createFromProperties(invalidProperties)).toThrow(DocumentErrors.INVALID_CREATION_DATE);
+      expect(document).toBeInstanceOf(Document);
+      expect(document.getId()).toBe('123');
+      expect(document.getName()).toBe('Test Document');
+      expect(document.getVersion()).toBe('1.0');
+      expect(document.getAttachments()).toEqual([]);
+      expect(document.getCreationDate()).toBeInstanceOf(Date);
+      expect(document.getContributors()).toEqual([]);
     });
   });
 

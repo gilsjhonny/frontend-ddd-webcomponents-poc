@@ -2,17 +2,26 @@ import { DocumentContributor } from './valueObjects/DocumentContributor';
 import { DocumentErrors } from './exceptions/DocumentError';
 import { DocumentException } from './exceptions/DocumentException';
 import { DocumentContributorDTO, DocumentProperties } from './types';
+import { SimpleUUIDGenerator } from '../../../shared/utils/SimpleUUIDGenerator';
 
 export class Document {
   private constructor(private readonly properties: DocumentProperties) {}
 
   static createFromProperties(properties: DocumentProperties): Document {
-    this.validate(properties);
-    return new Document(properties);
+    // Generate ID if not present
+    const props = { ...properties };
+    if (!props.id) props.id = SimpleUUIDGenerator.generateId();
+
+    // Generate creation date if not present
+    if (!props.creationDate) props.creationDate = new Date();
+
+    this.validate(props);
+
+    return new Document(props);
   }
 
   getId(): string {
-    return this.properties.id;
+    return this.properties.id || '';
   }
 
   getName(): string {
@@ -31,8 +40,8 @@ export class Document {
     return [...this.properties.attachments];
   }
 
-  getCreationDate(): Date {
-    return this.properties.creationDate;
+  getCreationDate(): Date | null {
+    return this.properties.creationDate || null;
   }
 
   addContributor(contributor: DocumentContributor): void {
@@ -53,9 +62,6 @@ export class Document {
   }
 
   private static validate(properties: DocumentProperties): void {
-    if (!properties.id || properties.id.trim() === '') {
-      throw new DocumentException(DocumentErrors.INVALID_ID);
-    }
     if (!properties.name || properties.name.trim() === '') {
       throw new DocumentException(DocumentErrors.INVALID_NAME);
     }

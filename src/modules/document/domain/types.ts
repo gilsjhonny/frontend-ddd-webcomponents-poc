@@ -1,12 +1,12 @@
 import { DocumentContributor } from './valueObjects/DocumentContributor';
 
 export type DocumentProperties = {
-  id: string;
+  id?: string;
   name: string;
   contributors: DocumentContributor[];
   version: string;
   attachments: string[];
-  creationDate: Date;
+  creationDate?: Date;
 };
 
 export interface DocumentContributorDTO {
