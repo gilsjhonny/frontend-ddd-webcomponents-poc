@@ -21,10 +21,21 @@ class SelectComponent extends HTMLElement {
     const selectWrapper = document.createElement('div');
     selectWrapper.className = 'select-wrapper';
 
-    // Create the button
+    // Create the select box
     const selectBox = document.createElement('div');
     selectBox.className = 'select-box';
-    selectBox.textContent = 'Select one...';
+
+    // Create the selected value
+    const selectedValue = document.createElement('span');
+    selectedValue.className = 'selected-value';
+    selectedValue.textContent = 'Select one...';
+    selectBox.appendChild(selectedValue);
+
+    // Caret Down Icon
+    const caretDownIcon = document.createElement('caret-down-icon');
+    caretDownIcon.setAttribute('width', '12px');
+    caretDownIcon.setAttribute('height', '12px');
+    selectBox.appendChild(caretDownIcon);
 
     // Options Wrapper
     const optionsWrapper = document.createElement('div');
@@ -49,7 +60,10 @@ class SelectComponent extends HTMLElement {
         background-color: transparent;
         min-width: 120px;
         cursor: pointer;
-        color: var(--blue-600);      
+        color: var(--blue-600);
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
       .options-wrapper {
         display: none;
@@ -85,6 +99,7 @@ class SelectComponent extends HTMLElement {
     const slot = this.shadowRoot!.querySelector('slot');
     const optionsWrapper = this.shadowRoot!.querySelector('.options-wrapper') as HTMLElement;
     const selectBox = this.shadowRoot!.querySelector('.select-box') as HTMLElement;
+    const selectedValueElement = this.shadowRoot!.querySelector('.selected-value') as HTMLElement;
 
     const assignedNodes = slot!.assignedNodes() as HTMLElement[];
 
@@ -96,7 +111,7 @@ class SelectComponent extends HTMLElement {
         optionDiv.dataset.value = node.getAttribute('value') || '';
 
         optionDiv.addEventListener('click', () => {
-          selectBox.textContent = node.textContent;
+          selectedValueElement.textContent = node.textContent;
           this.toggleOpen();
           this.dispatchEvent(
             new CustomEvent('onchange', {
