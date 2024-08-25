@@ -39,7 +39,7 @@ export class DocumentCardComponent extends HTMLElement {
         <div class="primary-info">
             <h2>${documentView.name}</h2>
             <div role="text" class="version">Version ${documentView.version}</div>
-            <div role="text" class="creation-date">Created on ${documentView.formattedCreationDate}</div>
+            <div role="text" class="creation-date">Created ${documentView.creationDateHumanized()}</div>
         </div>
 
         <ul class="contributors-list">
@@ -84,6 +84,7 @@ export class DocumentCardComponent extends HTMLElement {
             }
     
             h2 {
+                font-size: 1.2rem;
                 margin: 0;
             }
 
@@ -106,6 +107,7 @@ export class DocumentCardComponent extends HTMLElement {
                 margin-block-end: 0;
                 ${!isCompact ? 'flex: 1 1 25%;' : ''}
                 min-width: 0;
+                ${isCompact ? 'text-align: center;' : ''}
             }
     
             .contributors-list li,

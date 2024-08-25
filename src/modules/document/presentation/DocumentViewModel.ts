@@ -1,23 +1,24 @@
+import { DateUtils } from '../../../shared/utils/DateUtils';
 import { Document } from '../domain/Document';
 
 export class DocumentViewModel {
   private constructor(private readonly document: Document) {}
 
+  /**
+   * ============================================
+   * Static Factory Methods
+   * ============================================
+   */
+
   static createFromDomain(document: Document): DocumentViewModel {
     return new DocumentViewModel(document);
   }
 
-  get creationDate(): Date {
-    return this.document.getCreationDate();
-  }
-
-  get formattedCreationDate(): string {
-    return this.formatDate(this.document.getCreationDate());
-  }
-
-  get contributorNames(): string[] {
-    return this.document.getContributors().map((contributor) => contributor.name);
-  }
+  /**
+   * ============================================
+   * Public Getters for Document Properties
+   * ============================================
+   */
 
   get id(): string {
     return this.document.getId();
@@ -35,7 +36,39 @@ export class DocumentViewModel {
     return this.document.getAttachments();
   }
 
-  private formatDate(date: Date): string {
+  get creationDate(): Date | null {
+    return this.document.getCreationDate();
+  }
+
+  get formattedCreationDate(): string | null {
+    return this.formatDate(this.document.getCreationDate());
+  }
+
+  get contributorNames(): string[] {
+    return this.document.getContributors().map((contributor) => contributor.name);
+  }
+
+  /**
+   * ============================================
+   * Public Utility Methods
+   * ============================================
+   */
+
+  creationDateHumanized(): string {
+    if (!this.creationDate) return '';
+
+    return DateUtils.humanizeDate(this.creationDate);
+  }
+
+  /**
+   * ============================================
+   * Private Helper Methods
+   * ============================================
+   */
+
+  private formatDate(date: Date | null): string {
+    if (!date) return '';
+
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
