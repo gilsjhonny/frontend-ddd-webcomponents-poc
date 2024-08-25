@@ -73,8 +73,7 @@ export class HomePageComponent extends HTMLElement {
     if (result instanceof Error) {
       console.error('Failed to create document:', result.message);
     } else {
-      console.log('Document created successfully:', result);
-      this.handleModalClose(); // Close the modal after creating the document
+      this.handleModalClose();
 
       // Refresh the document list
       const documentList = this.shadowRoot!.querySelector<DocumentListComponent>(DocumentListComponent.componentName);
