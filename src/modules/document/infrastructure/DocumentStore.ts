@@ -1,5 +1,6 @@
 import { Document } from '../domain/Document';
 
+// Singleton class to store documents in memory this is a simple implementation
 export class DocumentMemoryStore {
   private static instance: DocumentMemoryStore;
   private documents: Document[] = [];
@@ -25,7 +26,6 @@ export class DocumentMemoryStore {
     this.documents.push(document);
   }
 
-  // Clears the documents in the memory store
   public clearDocuments(): void {
     this.documents = [];
   }

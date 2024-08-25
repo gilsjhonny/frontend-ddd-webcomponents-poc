@@ -39,7 +39,6 @@ export class DocumentController {
         case 'version':
           return a.version.localeCompare(b.version);
         case 'creation-date':
-          if (!a.creationDate || !b.creationDate) return 0;
           return new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime();
         default:
           return 0;

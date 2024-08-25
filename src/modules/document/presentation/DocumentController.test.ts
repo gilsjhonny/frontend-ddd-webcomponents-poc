@@ -6,24 +6,39 @@ import { DocumentViewModel } from './DocumentViewModel';
 import { DocumentProperties } from '../domain/types';
 
 describe('DocumentController', () => {
-  // Mocking the Document
   const document = Document.createFromProperties({
     id: '1',
     name: 'Document Name',
-    creationDate: new Date(),
+    creationDate: new Date('2023-01-01'),
     version: '1.0.0',
     contributors: [],
     attachments: [],
   });
 
-  // Mocking the DocumentRepository
+  const anotherDocument = Document.createFromProperties({
+    id: '2',
+    name: 'Another Document',
+    creationDate: new Date('2024-01-01'),
+    version: '1.1.0',
+    contributors: [],
+    attachments: [],
+  });
+
+  const documentWithoutDate = Document.createFromProperties({
+    id: '3',
+    name: 'No Date Document',
+    creationDate: null,
+    version: '1.2.0',
+    contributors: [],
+    attachments: [],
+  });
+
   const addDocumentMock = vi.fn();
   const documentRepository: DocumentRepository = {
     addDocument: addDocumentMock,
-    getDocuments: async () => [document],
+    getDocuments: async () => [document, anotherDocument, documentWithoutDate],
   };
 
-  // Mocking DocumentRepository for failing tests
   const failingDocumentRepository: DocumentRepository = {
     addDocument: () => new Error(),
     getDocuments: async () => new Error(),
@@ -61,8 +76,10 @@ describe('DocumentController', () => {
 
       const documents = await documentController.loadDocuments();
       const documentView = DocumentViewModel.createFromDomain(document);
+      const anotherDocumentView = DocumentViewModel.createFromDomain(anotherDocument);
+      const documentWithoutDateView = DocumentViewModel.createFromDomain(documentWithoutDate);
 
-      expect(documents).toEqual([documentView]);
+      expect(documents).toEqual([documentView, anotherDocumentView, documentWithoutDateView]);
     });
 
     it('should return an error if the repository fails', async () => {
@@ -72,6 +89,35 @@ describe('DocumentController', () => {
 
       expect(documents).toBeInstanceOf(Error);
       expect(documents.message).toBe('Failed to load documents');
+    });
+  });
+
+  describe('sortDocuments', () => {
+    it('should sort documents by name', () => {
+      const documentView1 = DocumentViewModel.createFromDomain(document);
+      const documentView2 = DocumentViewModel.createFromDomain(anotherDocument);
+
+      const sortedDocuments = DocumentController.sortDocuments([documentView2, documentView1], 'name');
+
+      expect(sortedDocuments).toEqual([documentView2, documentView1]);
+    });
+
+    it('should sort documents by version', () => {
+      const documentView1 = DocumentViewModel.createFromDomain(document);
+      const documentView2 = DocumentViewModel.createFromDomain(anotherDocument);
+
+      const sortedDocuments = DocumentController.sortDocuments([documentView1, documentView2], 'version');
+
+      expect(sortedDocuments).toEqual([documentView1, documentView2]);
+    });
+
+    it('should sort documents by creation date', () => {
+      const documentView1 = DocumentViewModel.createFromDomain(document);
+      const documentView2 = DocumentViewModel.createFromDomain(anotherDocument);
+
+      const sortedDocuments = DocumentController.sortDocuments([documentView1, documentView2], 'creation-date');
+
+      expect(sortedDocuments).toEqual([documentView2, documentView1]);
     });
   });
 });

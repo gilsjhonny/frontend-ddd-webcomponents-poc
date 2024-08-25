@@ -49,7 +49,7 @@ describe('DocumentCardComponent', () => {
         expect(getByTextFromShadowRoot(shadowRoot, 'John Doe')).toBeInTheDocument();
         expect(getByTextFromShadowRoot(shadowRoot, 'attachment1')).toBeInTheDocument();
         expect(getByTextFromShadowRoot(shadowRoot, 'attachment2')).toBeInTheDocument();
-        expect(getByTextFromShadowRoot(shadowRoot, documentView.formattedCreationDate, false)).toBeInTheDocument();
+        expect(getByTextFromShadowRoot(shadowRoot, documentView?.creationDateHumanized(), false)).toBeInTheDocument();
       });
     });
   });
@@ -79,7 +79,7 @@ describe('DocumentCardComponent', () => {
         expect(getByTextFromShadowRoot(shadowRoot, 'John Doe')).toBeInTheDocument();
         expect(getByTextFromShadowRoot(shadowRoot, 'attachment1')).toBeInTheDocument();
         expect(getByTextFromShadowRoot(shadowRoot, 'attachment2')).toBeInTheDocument();
-        expect(getByTextFromShadowRoot(shadowRoot, documentView.formattedCreationDate, false)).toBeInTheDocument();
+        expect(getByTextFromShadowRoot(shadowRoot, documentView.creationDateHumanized(), false)).toBeInTheDocument();
       });
     });
   });

@@ -6,11 +6,21 @@ export class DocumentContributor {
     private readonly name: string
   ) {}
 
+  /**
+   * ============================================
+   * Static Factory Methods
+   * ============================================
+   */
   static createFromProperties(id: string, name: string): DocumentContributor {
     this.validate(id, name);
     return new DocumentContributor(id, name);
   }
 
+  /**
+   * ============================================
+   * Public Getters for Contributor Properties
+   * ============================================
+   */
   getId(): string {
     return this.id;
   }
@@ -19,6 +29,11 @@ export class DocumentContributor {
     return this.name;
   }
 
+  /**
+   * ============================================
+   * Public Utility Methods
+   * ============================================
+   */
   equals(documentContributor: DocumentContributor): boolean {
     return this.id === documentContributor.getId();
   }
@@ -30,6 +45,11 @@ export class DocumentContributor {
     };
   }
 
+  /**
+   * ============================================
+   * Private Helper Methods
+   * ============================================
+   */
   private static validate(id: string, name: string): void {
     if (!id || id.trim() === '') {
       throw new Error('DocumentContributor must have a valid id.');

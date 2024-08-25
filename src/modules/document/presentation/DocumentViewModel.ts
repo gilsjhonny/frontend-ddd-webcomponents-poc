@@ -36,7 +36,7 @@ export class DocumentViewModel {
     return this.document.getAttachments();
   }
 
-  get creationDate(): Date | null {
+  get creationDate(): Date {
     return this.document.getCreationDate();
   }
 

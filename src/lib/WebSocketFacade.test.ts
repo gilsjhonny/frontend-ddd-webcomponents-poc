@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { WebSocketFacade, WebSocketListener } from './WebSocketFacade';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const global: any;
+
 describe('WebSocketFacade', () => {
   let mockSocket: Partial<WebSocket>;
   let websocketFacade: WebSocketFacade;
@@ -10,11 +13,21 @@ describe('WebSocketFacade', () => {
     mockSocket = {
       close: vi.fn(),
       send: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      binaryType: 'blob',
+      bufferedAmount: 0,
+      extensions: '',
+      onclose: null,
+      onerror: null,
+      onmessage: null,
+      onopen: null,
+      protocol: '',
       readyState: WebSocket.OPEN,
+      url: '',
     };
 
-    // @ts-ignore: Ignore the type error because we're mocking the WebSocket
-    global.WebSocket = vi.fn(() => mockSocket as WebSocket);
+    global.WebSocket = vi.fn(() => mockSocket as unknown as WebSocket);
 
     websocketFacade = new WebSocketFacade(url);
   });
@@ -40,7 +53,7 @@ describe('WebSocketFacade', () => {
       websocketFacade.connect();
 
       const mockEvent = { data: JSON.stringify({ key: 'value' }) } as MessageEvent;
-      mockSocket.onmessage?.(mockEvent);
+      (mockSocket as WebSocket).onmessage?.(mockEvent);
 
       expect(listener.onMessage).toHaveBeenCalledWith({ key: 'value' });
     });
@@ -56,7 +69,7 @@ describe('WebSocketFacade', () => {
       websocketFacade.connect();
 
       const mockErrorEvent = {} as Event;
-      mockSocket.onerror?.(mockErrorEvent);
+      (mockSocket as WebSocket).onerror?.(mockErrorEvent);
 
       expect(listener.onError).toHaveBeenCalledWith(mockErrorEvent);
     });
@@ -72,7 +85,7 @@ describe('WebSocketFacade', () => {
       websocketFacade.connect();
 
       const mockCloseEvent = {} as CloseEvent;
-      mockSocket.onclose?.(mockCloseEvent);
+      (mockSocket as WebSocket).onclose?.(mockCloseEvent);
 
       expect(listener.onClose).toHaveBeenCalledWith(mockCloseEvent);
     });

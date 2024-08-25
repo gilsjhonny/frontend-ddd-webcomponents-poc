@@ -7,6 +7,11 @@ import { SimpleUUIDGenerator } from '../../../shared/utils/SimpleUUIDGenerator';
 export class Document {
   private constructor(private readonly properties: DocumentProperties) {}
 
+  /**
+   * ============================================
+   * Static Factory Methods
+   * ============================================
+   */
   static createFromProperties(properties: DocumentProperties): Document {
     // Generate ID if not present
     const props = { ...properties };
@@ -20,8 +25,13 @@ export class Document {
     return new Document(props);
   }
 
+  /**
+   * ============================================
+   * Public Getters for Document Properties
+   * ============================================
+   */
   getId(): string {
-    return this.properties.id || '';
+    return this.properties.id as string; // id is guaranteed to be set in createFromProperties
   }
 
   getName(): string {
@@ -40,10 +50,15 @@ export class Document {
     return [...this.properties.attachments];
   }
 
-  getCreationDate(): Date | null {
-    return this.properties.creationDate || null;
+  getCreationDate(): Date {
+    return this.properties.creationDate as Date; // creationDate is guaranteed to be set in createFromProperties
   }
 
+  /**
+   * ============================================
+   * Public Methods for Modifying Document Properties
+   * ============================================
+   */
   addContributor(contributor: DocumentContributor): void {
     const isContributorPresent = this.properties.contributors.some((existingContributor) =>
       existingContributor.equals(contributor)
@@ -61,6 +76,11 @@ export class Document {
     this.properties.attachments.push(attachment);
   }
 
+  /**
+   * ============================================
+   * Private Helper Methods
+   * ============================================
+   */
   private static validate(properties: DocumentProperties): void {
     if (!properties.name || properties.name.trim() === '') {
       throw new DocumentException(DocumentErrors.INVALID_NAME);
