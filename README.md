@@ -12,6 +12,7 @@
    - [Shared](#shared)
 4. [The Project](#the-project)
    - [Key Features](#key-features)
+5. [Conclusion](#conclusion)
 
 ## Introduction
 I wanted to experiment with applying Domain-Driven Design (DDD) principles to a frontend project using WebComponents. This is my attempt to see how DDD, which is usually more of a backend thing, can be useful on the frontend side of things. I also wanted to challenge myself by building the components entirely from scratch, without relying on any libraries.
