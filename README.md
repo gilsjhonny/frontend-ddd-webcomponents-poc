@@ -31,21 +31,31 @@ The project follows a Domain-Driven Design (DDD) approach, organizing the code i
 src/
 │
 ├── modules/
-│   └── document/
+│   ├── document/
+│   │   ├── domain/
+│   │   │   ├── exceptions/
+│   │   │   ├── valueObjects/
+│   │   │   ├── Document.ts (entity)
+│   │   │   ├── DocumentRepository.ts (interface)
+│   │   ├── infrastructure/
+│   │   │   ├── DocumentApi.ts
+│   │   │   ├── DocumentStore.ts (singleton store)
+│   │   │   ├── HttpDocumentRepository.ts
+│   │   │   ├── MockDocumentRepository.ts
+│   │   ├── presentation/
+│   │   │   ├── DocumentController.ts
+│   │   │   ├── DocumentViewModel.ts
+│   │   │   └── components/ (web components)
+│   │
+│   └── notification/
 │       ├── domain/
-│       │   ├── exceptions/
-│       │   ├── valueObjects/
-│       │   ├── Document.ts
-│       │   ├── DocumentRepository.ts (interface)
+│       │   ├── Notification.ts (entity)
 │       ├── infrastructure/
-│       │   ├── DocumentApi.ts
-│       │   ├── DocumentStore.ts (singleton store)
-│       │   ├── HttpDocumentRepository.ts
-│       │   ├── MockDocumentRepository.ts
+│       │   ├── NotificationWebSocket.ts
 │       ├── presentation/
-│       │   ├── DocumentController.ts
-│       │   ├── DocumentViewModel.ts
-│       │   └── components/ (web components)
+│       │   ├── NotificationController.ts
+│       │   └── components/
+│       │       └── Notification.ts (UI component)
 │
 ├── presentation/ (cross-domain presentation)
 │
