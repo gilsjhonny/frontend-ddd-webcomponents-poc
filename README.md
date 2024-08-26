@@ -56,8 +56,7 @@ src/
 │       │   ├── NotificationWebSocket.ts
 │       ├── presentation/
 │       │   ├── NotificationController.ts
-│       │   └── components/
-│       │       └── Notification.ts (UI component)
+│       │   └── components/ (web components)
 │
 ├── presentation/ (cross-domain presentation)
 │
