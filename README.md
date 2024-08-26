@@ -111,59 +111,63 @@ export class MyButton extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.render();
   }
 
-  /**
+    /**
    * ============================================
    * Private Methods
    * ============================================
    */
 
-  private render() {
-    this.clearShadowRoot();
-
-    const button = document.createElement('button');
-    button.className = this.BASE_CLASS_NAME;
-    button.textContent = this.getAttribute('label') || 'Click Me';
-    button.disabled = this.hasAttribute(MyButton.DISABLED_ATTRIBUTE);
-
-    this.applyStyles(button);
-    this.shadowRoot!.appendChild(button);
-  }
-
-  private applyStyles(button: HTMLButtonElement) {
-    const style = document.createElement('style');
-
-    style.textContent = `
-      .${this.BASE_CLASS_NAME} {
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        background-color: var(--button-bg-color, #007bff);
-        color: var(--button-text-color, #fff);
-        border: none;
-        border-radius: 4px;
-      }
-
-      .${this.BASE_CLASS_NAME}[disabled] {
-        background-color: #ccc;
-        cursor: not-allowed;
-      }
-    `;
-
-    this.shadowRoot!.appendChild(style);
-  }
-
-  private clearShadowRoot() {
-    this.shadowRoot!.innerHTML = '';
-  }
+    private render() {
+      this.clearShadowRoot();
+  
+      this.shadowRoot!.appendChild(this.createButtonElement());
+      this.shadowRoot!.appendChild(this.getStyles());
+    }
+  
+    private createButtonElement(): HTMLButtonElement {
+      const button = document.createElement('button');
+      button.className = this.BASE_CLASS_NAME;
+      button.textContent = this.getAttribute('label') || 'Click Me';
+      button.disabled = this.hasAttribute(MyButton.DISABLED_ATTRIBUTE);
+      return button;
+    }
+  
+    private getStyles(): HTMLStyleElement {
+      const style = document.createElement('style');
+      style.textContent = `
+        .${this.BASE_CLASS_NAME} {
+          padding: 10px 20px;
+          font-size: 16px;
+          cursor: pointer;
+          background-color: var(--button-bg-color, #007bff);
+          color: var(--button-text-color, #fff);
+          border: none;
+          border-radius: 4px;
+        }
+  
+        .${this.BASE_CLASS_NAME}[disabled] {
+          background-color: #ccc;
+          cursor: not-allowed;
+        }
+      `;
+      return style;
+    }
+  
+    private clearShadowRoot() {
+      this.shadowRoot!.innerHTML = '';
+    }
 
   /**
    * ============================================
    * Web Component Lifecycle
    * ============================================
    */
+
+  connectedCallback() {
+    this.render();
+  }
 
   static get observedAttributes() {
     return [MyButton.DISABLED_ATTRIBUTE, 'label'];
@@ -174,6 +178,8 @@ export class MyButton extends HTMLElement {
       this.render();
     }
   }
+
+
 }
 
 export function registerMyButton() {
@@ -181,12 +187,9 @@ export function registerMyButton() {
 }
 ```
 
-- **Class Name**: `MyButton` is the class name of the component. It extends `HTMLElement`, allowing it to be used as a custom `HTML` element.
-- **Base Class Name**: `BASE_CLASS_NAME` is used to define a consistent `CSS` class name for the component’s elements.
-- **Attributes**: The component listens for a disabled attribute and a label attribute to control whether the button is clickable and what text it displays.
-- **Rendering**: The render method constructs the button element, sets its properties (like text and disabled state), and adds it to the shadow DOM.
-- **Styling**: The `applyStyles` method injects CSS into the shadow DOM to style the button. It includes styles for both the normal and disabled states.
-- **Lifecycle Methods** (Web Components API): The component uses attributeChangedCallback and observedAttributes to react when the disabled or label attributes change, re-rendering the button if necessary.
+- **Rendering:** The render method will be responsible for constructing the elements and appending them to the shadow DOM.
+- **Styling:** The getStyles method returns a style element containing the CSS rules. This CSS is encapsulated within the shadow DOM, ensuring that styles are isolated from the rest of the page.
+- **Lifecycle Methods:** The component uses Web Components lifecycle methods like connectedCallback to trigger rendering when the component is added to the DOM. It also implements attributeChangedCallback to re-render the button whenever the disabled or label attributes change.
 
 
 ## The Project
