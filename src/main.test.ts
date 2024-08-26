@@ -1,12 +1,32 @@
-import { expect, test } from 'vitest';
-import { screen } from '@testing-library/dom';
+import { describe, it, beforeEach, afterEach, expect, vi } from 'vitest';
+import { HomePageComponent } from './presentation/pages/Home';
 
-test('uses jest-dom', () => {
-  document.body.innerHTML = `
-    <span data-testid="not-empty"><span data-testid="empty"></span></span>
-    <div data-testid="visible">Visible Example</div>
-  `;
+vi.mock('./presentation/componentsRegistry', () => ({
+  registerAllComponents: vi.fn(),
+}));
 
-  expect(screen.queryByTestId('not-empty')).not.toBeEmptyDOMElement();
-  expect(screen.getByText('Visible Example')).toBeVisible();
+describe('Main script', () => {
+  let appDiv: HTMLDivElement;
+
+  beforeEach(() => {
+    appDiv = document.createElement('div');
+    appDiv.id = 'app';
+    document.body.appendChild(appDiv);
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = '';
+    vi.restoreAllMocks();
+  });
+
+  it('should create and append the HomePageComponent on DOMContentLoaded', async () => {
+    const createElementSpy = vi.spyOn(document, 'createElement');
+
+    await import('./main');
+
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+
+    expect(createElementSpy).toHaveBeenCalledWith(HomePageComponent.componentName);
+    expect(appDiv.querySelector(HomePageComponent.componentName)).toBeInTheDocument();
+  });
 });

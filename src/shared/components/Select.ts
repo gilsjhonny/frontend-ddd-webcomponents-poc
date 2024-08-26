@@ -138,7 +138,7 @@ export class SelectComponent extends HTMLElement {
 
   /**
    * ============================================
-   * Public methods
+   * Web Component Lifecycle
    * ============================================
    */
 
@@ -151,6 +151,11 @@ export class SelectComponent extends HTMLElement {
   disconnectedCallback() {
     this.shadowRoot!.querySelector('.select-box')!.removeEventListener('click', this.toggleOpen);
   }
+  /**
+   * ============================================
+   * Setters, Getters and Statics
+   * ============================================
+   */
 
   static get componentName() {
     return 'custom-select';

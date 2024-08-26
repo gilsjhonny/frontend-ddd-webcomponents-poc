@@ -9,75 +9,145 @@ import { DocumentAPI } from '../../modules/document/infrastructure/DocumentAPI';
 import { ModalComponent } from '../../shared/components/Modal';
 
 export class HomePageComponent extends HTMLElement {
-  private listViewType: 'list' | 'grid';
+  private listViewType: 'list' | 'grid' = 'list';
   private sortCriteria: 'name' | 'version' | 'creation-date' = 'creation-date';
+  private documentController = new DocumentController(new HttpDocumentRepository(DocumentAPI));
 
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.listViewType = 'list';
   }
 
-  connectedCallback() {
-    this.render();
+  private displayError(title: string, message: string) {
+    console.error(`${title}: ${message}`);
+  }
 
+  /**
+   * ============================================
+   * Private Methods
+   * ============================================
+   */
+
+  private render() {
+    this.clearShadowRoot();
+
+    this.shadowRoot!.innerHTML = `
+      ${this.getStyles()}
+      <div class="home-page">
+          <div class="notifications">
+              <${NotificationsComponent.componentName}></${NotificationsComponent.componentName}>
+          </div>
+          <h1 class="header">Documents</h1>
+          <${DocumentListComponent.componentName} data-view-type="${this.listViewType}">
+              <div slot="top-left">
+                <div class="sort-by">
+                  <div>Sort by:</div>
+                <custom-select>
+                  <option value="name">Name</option>
+                  <option value="creation-date">Creation date</option>
+                  <option value="version">Version</option>
+                </custom-select>
+                </div>
+              </div>
+              <${DocumentListToggle.componentName} slot="top-right" data-view-type="${this.listViewType}"></${DocumentListToggle.componentName}>
+          </${DocumentListComponent.componentName}>
+          <button class="add-document-button">+ Add document</button>
+      </div>
+      
+      <${ModalComponent.componentName}>
+          <h3 slot="title">Add a new document</h3>
+          <${AddDocumentFormComponent.componentName} slot="content"></${AddDocumentFormComponent.componentName}>
+      </${ModalComponent.componentName}>
+    `;
+  }
+
+  private getStyles(): string {
+    return `
+      <style>
+        .home-page {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          padding: 16px;
+          max-width: 1200px;
+          width: 100%;
+          margin: 0 auto;
+        }
+
+        .notifications {
+          margin-bottom: 16px;
+          display: flex;
+          justify-content: center;
+        }
+
+        .add-document-button {
+          background-color: var(--gray-100);
+          border: none;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: var(--blue-600);
+          height: 90px;
+          cursor: pointer;
+          margin-top: 26px;
+        }
+
+        .sort-by {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 0.9rem;
+        }
+      </style>
+    `;
+  }
+
+  private bindEventHandlers() {
     this.handleToggleView = this.handleToggleView.bind(this);
     this.handleAddDocumentClick = this.handleAddDocumentClick.bind(this);
     this.handleModalClose = this.handleModalClose.bind(this);
     this.handleDocumentSubmission = this.handleDocumentSubmission.bind(this);
     this.handleSortCriteriaChange = this.handleSortCriteriaChange.bind(this);
 
-    this.shadowRoot!.addEventListener('toggle-view', this.handleToggleView);
-    this.shadowRoot!.addEventListener('document-submitted', this.handleDocumentSubmission);
-    this.shadowRoot!.querySelector('.add-document-button')?.addEventListener('click', this.handleAddDocumentClick);
-    this.shadowRoot!.querySelector('custom-select')?.addEventListener('onchange', this.handleSortCriteriaChange);
-
-    this.updateSelectValue();
+    const shadowRoot = this.shadowRoot!;
+    shadowRoot.addEventListener('toggle-view', this.handleToggleView as EventListener);
+    shadowRoot.addEventListener('document-submitted', (event) => this.handleDocumentSubmission(event as CustomEvent));
+    shadowRoot.querySelector('.add-document-button')?.addEventListener('click', this.handleAddDocumentClick);
+    shadowRoot
+      .querySelector('custom-select')
+      ?.addEventListener('onchange', this.handleSortCriteriaChange as EventListener);
   }
 
-  disconnectedCallback() {
-    this.shadowRoot!.removeEventListener('toggle-view', this.handleToggleView);
-    this.shadowRoot!.querySelector('.add-document-button')?.removeEventListener('click', this.handleAddDocumentClick);
+  private unbindEventHandlers() {
+    const shadowRoot = this.shadowRoot!;
+    shadowRoot.removeEventListener('toggle-view', this.handleToggleView);
+    shadowRoot.querySelector('.add-document-button')?.removeEventListener('click', this.handleAddDocumentClick);
+    shadowRoot
+      .querySelector('custom-select')
+      ?.removeEventListener('onchange', this.handleSortCriteriaChange as EventListener);
   }
 
   private handleToggleView(event: Event) {
-    const customEvent = event as CustomEvent;
-    const viewType = customEvent.detail.view;
+    const viewType = (event as CustomEvent).detail.view;
     this.listViewType = viewType;
-
-    const documentList = this.shadowRoot!.querySelector<DocumentListComponent>(DocumentListComponent.componentName);
-    const documentToggle = this.shadowRoot!.querySelector<DocumentListToggle>(DocumentListToggle.componentName);
-
-    if (documentList) {
-      documentList.setAttribute('data-view-type', this.listViewType);
-    }
-
-    if (documentToggle) {
-      documentToggle.setAttribute('data-view-type', this.listViewType);
-    }
+    this.updateDocumentListAndToggle();
   }
 
   private handleSortCriteriaChange(event: CustomEvent) {
     this.sortCriteria = event.detail.value as 'name' | 'version' | 'creation-date';
-
     const documentList = this.shadowRoot!.querySelector<DocumentListComponent>(DocumentListComponent.componentName);
     documentList?.setAttribute('data-sort-criteria', this.sortCriteria);
   }
 
   private async handleDocumentSubmission(event: CustomEvent) {
     const documentData = event.detail as DocumentProperties;
-
-    const documentController = new DocumentController(new HttpDocumentRepository(DocumentAPI));
-    const result = await documentController.createDocument(documentData);
+    const result = await this.documentController.createDocument(documentData);
 
     if (result instanceof Error) {
-      console.error('Failed to create document:', result.message);
+      this.displayError('Failed to create document', result.message);
     } else {
       this.handleModalClose();
-
-      // Refresh the document list
-      const documentList = this.shadowRoot!.querySelector<DocumentListComponent>(DocumentListComponent.componentName);
-      await documentList?.refreshDocuments();
+      this.refreshDocumentList();
     }
   }
 
@@ -98,79 +168,37 @@ export class HomePageComponent extends HTMLElement {
     }
   }
 
-  private render() {
-    this.clearShadowRoot();
+  private async refreshDocumentList() {
+    const documentList = this.shadowRoot!.querySelector<DocumentListComponent>(DocumentListComponent.componentName);
+    await documentList?.refreshDocuments();
+  }
 
-    this.shadowRoot!.innerHTML = `
-        <style>
-          .home-page {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            padding: 16px;
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-          }
+  private updateDocumentListAndToggle() {
+    const documentList = this.shadowRoot!.querySelector<DocumentListComponent>(DocumentListComponent.componentName);
+    const documentToggle = this.shadowRoot!.querySelector<DocumentListToggle>(DocumentListToggle.componentName);
 
-          .notifications {
-            margin-bottom: 16px;
-            display: flex;
-            justify-content: center;
-          }
-
-          .add-document-button {
-            background-color: var(--gray-100);
-            border: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--blue-600);
-            height: 90px;
-            cursor: pointer;
-            margin-top: 26px;
-          }
-
-          .sort-by {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-          }
-        </style>
-  
-        <div class="home-page">
-            <div class="notifications">
-                <${NotificationsComponent.componentName}></${NotificationsComponent.componentName}>
-            </div>
-            <h1 class="header">Documents</h1>
-            <${DocumentListComponent.componentName} data-view-type="${this.listViewType}">
-                <div slot="top-left">
-                  <div class="sort-by">
-                    <div>Sort by:</div>
-                  <custom-select>
-                    <option value="name">Name</option>
-                    <option value="creation-date">Creation date</option>
-                    <option value="version">Version</option>
-                  </custom-select>
-                  </div>
-                </div>
-                <${DocumentListToggle.componentName} slot="top-right" data-view-type="${this.listViewType}"></${DocumentListToggle.componentName}>
-            </${DocumentListComponent.componentName}>
-            <button class="add-document-button">+ Add document</button>
-        </div>
-        
-        <${ModalComponent.componentName}>
-            <h3 slot="title">Add a new document</h3>
-            <${AddDocumentFormComponent.componentName} slot="content"></${AddDocumentFormComponent.componentName}>
-        </${ModalComponent.componentName}>
-      `;
-
-    this.shadowRoot!.querySelector('.close-modal-button')?.addEventListener('click', this.handleModalClose);
+    documentList?.setAttribute('data-view-type', this.listViewType);
+    documentToggle?.setAttribute('data-view-type', this.listViewType);
   }
 
   private clearShadowRoot() {
     this.shadowRoot!.innerHTML = '';
+  }
+
+  /**
+   * ============================================
+   * Web Component Lifecycle
+   * ============================================
+   */
+
+  connectedCallback() {
+    this.render();
+    this.bindEventHandlers();
+    this.updateSelectValue();
+  }
+
+  disconnectedCallback() {
+    this.unbindEventHandlers();
   }
 
   static get componentName() {
