@@ -1,4 +1,4 @@
-# Domain-Driven Design (DDD) Architecture in Frontend using Web Components
+# Domain-Driven Design (DDD) in Frontend with Pure Web Components
 
 1. [Introduction](#introduction)
 2. [Disclaimer](#disclaimer)
