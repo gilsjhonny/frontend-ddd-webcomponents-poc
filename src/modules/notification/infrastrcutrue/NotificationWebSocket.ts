@@ -3,8 +3,10 @@ import { Notification } from '../domain/Notification';
 import { WebSocketNotification } from '../types';
 
 export class NotificationWebSocket extends WebSocketFacade {
-  constructor(url: string) {
-    super(url);
+  static url = `${import.meta.env.VITE_WS_URL}/notifications`;
+
+  constructor() {
+    super(NotificationWebSocket.url);
   }
 
   connect(): void {
@@ -25,7 +27,7 @@ export class NotificationWebSocket extends WebSocketFacade {
 
   mapToDomain(data: WebSocketNotification): Notification {
     return Notification.createFromProperties({
-      timestamp: data.Timestamp,
+      timestamp: new Date(data.Timestamp),
       userId: data.UserID,
       userName: data.UserName,
       documentId: data.DocumentID,

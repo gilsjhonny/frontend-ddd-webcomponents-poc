@@ -9,13 +9,12 @@ export class NotificationsComponent extends HTMLElement {
   private newNotifications: Notification[] = [];
   private notificationBox: HTMLElement | null = null;
   private updateInterval: number | null = null;
-  private socketUrl: string = 'ws://localhost:9090/notifications';
 
   constructor() {
     super();
 
     this.attachShadow({ mode: 'open' });
-    const notificationWebSocket = new NotificationWebSocket(this.socketUrl);
+    const notificationWebSocket = new NotificationWebSocket();
     this.notificationController = new NotificationController(notificationWebSocket);
   }
 
@@ -177,10 +176,17 @@ export class NotificationsComponent extends HTMLElement {
     }
   }
 
-  private addNotificationToBox(notification: Notification) {
+  private updateNotificationBox() {
     if (this.notificationBox) {
-      const notificationItem = this.createNewNotificationItem(notification);
-      this.notificationBox.prepend(notificationItem);
+      this.notificationBox.innerHTML = '';
+
+      const sortedNotifications = NotificationController.sortNotificationsByTimestamp(this.newNotifications);
+
+      console.log(typeof this.newNotifications[0].getTimestamp());
+      sortedNotifications.forEach((notification) => {
+        const notificationItem = this.createNewNotificationItem(notification);
+        this.notificationBox!.appendChild(notificationItem);
+      });
     }
   }
 
@@ -191,7 +197,7 @@ export class NotificationsComponent extends HTMLElement {
 
   private handleNewNotifications(notification: Notification) {
     this.newNotifications.push(notification);
-    this.addNotificationToBox(notification);
+    this.updateNotificationBox();
     this.updateNotificationCount();
   }
 

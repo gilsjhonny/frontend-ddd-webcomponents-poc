@@ -1,5 +1,5 @@
 export interface WebSocketNotification {
-  Timestamp: Date;
+  Timestamp: string;
   UserID: string;
   UserName: string;
   DocumentID: string;

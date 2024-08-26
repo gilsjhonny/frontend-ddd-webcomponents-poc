@@ -8,7 +8,7 @@ describe('NotificationController', () => {
   let mockWebSocket: Partial<NotificationWebSocket>;
   let notificationController: NotificationController;
   const mockNotificationData: WebSocketNotification = {
-    Timestamp: new Date(),
+    Timestamp: '2021-09-01T12:00:00Z',
     UserID: 'user123',
     UserName: 'John Doe',
     DocumentID: 'doc456',
@@ -22,7 +22,7 @@ describe('NotificationController', () => {
       disconnect: vi.fn(),
       mapToDomain: vi.fn().mockReturnValue(
         Notification.createFromProperties({
-          timestamp: mockNotificationData.Timestamp,
+          timestamp: new Date(mockNotificationData.Timestamp),
           userId: mockNotificationData.UserID,
           userName: mockNotificationData.UserName,
           documentId: mockNotificationData.DocumentID,
@@ -50,7 +50,7 @@ describe('NotificationController', () => {
       notificationController.startListening(listener);
 
       const mockOnMessage = (mockWebSocket.addListener as vi.Mock).mock.calls[0][0].onMessage;
-      const notification = new NotificationWebSocket('').mapToDomain(mockNotificationData);
+      const notification = new NotificationWebSocket().mapToDomain(mockNotificationData);
 
       mockOnMessage(mockNotificationData);
 
@@ -88,6 +88,39 @@ describe('NotificationController', () => {
     it('should disconnect from the WebSocket', () => {
       notificationController.stopListening();
       expect(mockWebSocket.disconnect).toHaveBeenCalled();
+    });
+  });
+
+  describe('sortNotificationsByTimestamp', () => {
+    it('should sort notifications by timestamp in descending order', () => {
+      const notifications = [
+        Notification.createFromProperties({
+          timestamp: new Date('2023-09-01T12:05:00Z'), // Most recent - Alice Doe
+          userId: 'user789',
+          userName: 'Alice Doe',
+          documentId: 'doc123',
+          documentTitle: 'Sample Document',
+        }),
+        Notification.createFromProperties({
+          timestamp: new Date('2022-09-01T12:00:00Z'), // Middle - John Doe
+          userId: 'user123',
+          userName: 'John Doe',
+          documentId: 'doc456',
+          documentTitle: 'Sample Document',
+        }),
+        Notification.createFromProperties({
+          timestamp: new Date('2021-09-01T12:05:00Z'), // Oldest - Jane Doe
+          userId: 'user456',
+          userName: 'Jane Doe',
+          documentId: 'doc789',
+          documentTitle: 'Sample Document',
+        }),
+      ];
+
+      const sortedNotifications = NotificationController.sortNotificationsByTimestamp(notifications);
+
+      // The correct order should be [most recent, middle, oldest]
+      expect(sortedNotifications).toEqual([notifications[0], notifications[1], notifications[2]]);
     });
   });
 });

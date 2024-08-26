@@ -29,4 +29,8 @@ export class NotificationController {
   public stopListening(): void {
     this.notificationWebSocket.disconnect();
   }
+
+  public static sortNotificationsByTimestamp(notifications: Notification[]): Notification[] {
+    return notifications.sort((a, b) => b.getTimestamp().getTime() - a.getTimestamp().getTime());
+  }
 }
