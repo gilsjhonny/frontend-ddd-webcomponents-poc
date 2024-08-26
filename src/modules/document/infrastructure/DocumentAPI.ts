@@ -12,7 +12,7 @@ export interface DocumentResponse {
 }
 
 export class DocumentAPI {
-  private static endpoint = `http://localhost:9090/documents`; // In a real-world application, this would be an environment variable
+  private static endpoint = `${import.meta.env.VITE_API_URL}/documents`;
 
   static async fetchDocuments(): Promise<DocumentResponse[]> {
     try {
