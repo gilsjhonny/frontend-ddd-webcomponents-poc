@@ -16,7 +16,7 @@
 6. [Conclusion](#conclusion)
 
 ## Introduction
-I wanted to experiment with applying Domain-Driven Design (DDD) principles to a frontend project using WebComponents. This is my attempt to see how DDD, which is usually more of a backend thing, can be useful on the frontend side of things. I also wanted to challenge myself by building the components entirely from scratch, without relying on any libraries.
+I wanted to experiment with applying Domain-Driven Design (DDD) principles to a frontend project using Web Components. This is my attempt to see how DDD, which is usually more of a backend thing, can be useful on the frontend side of things. I also wanted to challenge myself by building the components entirely from scratch, without relying on any libraries.
 
 In this repo, you'll find a project where I’ve used WebComponents to build UI elements that are both reusable and encapsulated, all while sticking to DDD concepts. The code is heavily based on object-oriented programming (OOP) in TypeScript, which helped in organizing and structuring the domain logic. The goal here was to explore how these architectural ideas could make a frontend project more organized and aligned with the domain logic.
 
