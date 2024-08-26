@@ -12,7 +12,8 @@
    - [Shared](#shared)
 4. [The Project](#the-project)
    - [Key Features](#key-features)
-5. [Conclusion](#conclusion)
+5. [Running the project](#running-the-project)
+6. [Conclusion](#conclusion)
 
 ## Introduction
 I wanted to experiment with applying Domain-Driven Design (DDD) principles to a frontend project using WebComponents. This is my attempt to see how DDD, which is usually more of a backend thing, can be useful on the frontend side of things. I also wanted to challenge myself by building the components entirely from scratch, without relying on any libraries.
@@ -204,6 +205,50 @@ In this project, I built a web app that displays a list of documents a customer 
 - Document Creation: Users can create new documents, which are instantly added to the document list.
 
 - Sorting Options: Documents can be sorted by name, version, or creation date, giving users flexibility in how they organize their documents.
+
+
+## Running the Project
+
+Getting the project up and running is pretty straightforward. Here's what you need to do:
+
+### Frontend
+1. **Install Dependencies:**  
+   Navigate to the project directory and run:
+
+```bash
+  yarn install
+```
+
+2. **Start the frontend development server**:
+
+```bash
+yarn run dev
+```
+
+3. **Run Tests**:
+   
+If you want to run the tests for the project, you can do so with:
+
+```bash
+yarn run test
+```
+or (for coverage report)
+```bash
+yarn run coverage
+```
+
+### Backend (Go Server)
+
+1. **Navigate to the Server Directory:**
+The backend server is located in the `/server` directory. Run in that folder:
+```bash
+go run server.go -addr localhost:9090
+```
+
+This will start the server on localhost at port `9090`.
+
+**Adjusting the Port:**
+If you need to run the server on a different port, simply change the `-addr` flag to your desired port number. Just remember, if you change the port, you'll also need to update the .env files in the frontend project to reflect the new port number.
 
 
 ## Conclusion
