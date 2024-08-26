@@ -205,4 +205,7 @@ In this project, I built a web app that displays a list of documents a customer 
 - Sorting Options: Documents can be sorted by name, version, or creation date, giving users flexibility in how they organize their documents.
 
 
+## Conclusion
+Honestly, I’d consider using this kind of architecture when I’m dealing with a frontend that has complex business logic or distinct areas that need to stay separate. If I know a project is going to grow and get more complicated over time, having everything  organized into layers and modules from the start seems like a smart move. That said, I wouldn’t use this architecture for everything. If I’m working on something simple or small I’d probably skip this setup. It adds a level of complexity that might be overkill for a straightforward project, where a simpler approach could get the job done quicker and with less overhead. And if I’m on a tight deadline, I’d definitely lean toward something more streamlined. The initial setup and learning curve of this architecture could slow things down when time is of the essence.
+
 
